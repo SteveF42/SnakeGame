@@ -165,7 +165,6 @@ void highScores(){
     std::ifstream Scores("Scores.txt");
 
     std::string data;
-    if(IsEmpty(Scores)) return;
 
     std::multimap<int, std::string> playerScores;
     std::vector<int> sortedScores;
@@ -186,7 +185,11 @@ void highScores(){
         }
         i++;
     }
-    if(SCORE > sortedScores[sortedScores.size()-1] && sortedScores.size() < 10 ){
+    if(sortedScores.empty() || sortedScores.size() <= 10){
+        if(!sortedScores.empty())
+            if(sortedScores[sortedScores.size()-1] > SCORE && sortedScores.size() == 10) 
+                return;
+
         cout << "\nCongradulations, you made a highscore!\nPlease input your name: ";
         std::string name;
         getline(std::cin,name);
@@ -202,6 +205,8 @@ void highScores(){
             fs.push_back({x.second ,x.first});
         }
         std::reverse(fs.begin(), fs.end());
+        if(fs.size() >= 9)
+            fs.pop_back();
         
         std::fstream append("Scores.txt");
         for(auto y : fs){
@@ -210,7 +215,7 @@ void highScores(){
             append << s;
         }
         Scores.close();
-
+        append.close();
     }
 
 }
@@ -219,7 +224,7 @@ int main()
 {
     srand(time(0));
     cout << "RUNNING\n";
-    while (GAMEOVER)
+    while (!GAMEOVER)
     {
         system("cls");
         draw();
@@ -227,4 +232,6 @@ int main()
     }
     printf("GAME OVER, SCORE: %i\n", SCORE);
     highScores();
+
+    return 0;
 }
